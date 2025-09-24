@@ -1,0 +1,49 @@
+name: Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uvnote
+        run: |
+          uv venv
+          source .venv/bin/activate
+          uv pip install -e https://github.com/drbh/uvnote.git
+
+      - name: Build site with uvnote
+        run: |
+          source .venv/bin/activate
+          uvnote build .
+
+      - name: Deploy to Hugging Face Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # Install huggingface-hub CLI
+          uvx --from huggingface-hub hf upload \
+            --token $HF_TOKEN \
+            --delete \
+            --exclude "*.json" \
+            --exclude "*.pt" \
+            --repo-type space \
+            ${{ secrets.HF_SPACE_NAME }} \
+            site/ \
+            /
