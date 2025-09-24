@@ -31,4 +31,4 @@ jobs:
           --flavor a10g-largex4 \
           ghcr.io/astral-sh/uv:debian \
           /bin/bash -c \
-          "git clone https://github.com/${{ github.repository }}.git repo && cd repo && uvx https://github.com/drbh/uvnote.git build moe_benchmarks && uvx --from huggingface-hub hf upload --token \$HF_TOKEN --delete --exclude \"*.json\" --repo-type space drbh/uvnote-book-explore site/ /"
+          "git clone https://github.com/${{ github.repository }}.git repo && cd repo && uvx https://github.com/drbh/uvnote.git build moe_benchmarks && uvx --from huggingface-hub hf upload --token \$HF_TOKEN --delete --exclude \"*.json\" --exclude \"*.pt\" --repo-type space drbh/uvnote-book-explore site/ /"
