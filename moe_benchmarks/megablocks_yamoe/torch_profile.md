@@ -1026,7 +1026,7 @@ def build_megablocks_model(device: torch.device):
     # Attach loaded expert weights to the experts container
     e = model.experts
     e.alpha = 1.702
-    e.capacity_factor = 64
+    e.capacity_factor = 32
     e.gate_up_proj = torch.nn.Parameter(gate_up_proj.clone().to(device))
     e.gate_up_proj_bias = torch.nn.Parameter(gate_up_proj_bias.clone().to(device))
     e.down_proj = torch.nn.Parameter(down_proj.clone().to(device))
