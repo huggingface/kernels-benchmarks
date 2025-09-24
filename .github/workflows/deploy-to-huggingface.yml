@@ -17,33 +17,18 @@ jobs:
         with:
           version: "latest"
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install uvnote
-        run: |
-          uv venv
-          source .venv/bin/activate
-          uv pip install https://github.com/drbh/uvnote.git
-
-      - name: Build site with uvnote
-        run: |
-          source .venv/bin/activate
-          uvnote build .
-
-      - name: Deploy to Hugging Face Spaces
+      - name: Deploy via HF Job
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Install huggingface-hub CLI
-          uvx --from huggingface-hub hf upload \
-            --token $HF_TOKEN \
-            --delete \
-            --exclude "*.json" \
-            --exclude "*.pt" \
-            --repo-type space \
-            ${{ secrets.HF_SPACE_NAME }} \
-            site/ \
-            /
+          # Create secrets file for HF job
+          echo "HF_TOKEN=$HF_TOKEN" > .sec
+
+          # Run uvnote build on GPU-enabled HF job and deploy
+          uvx --from huggingface-hub \
+          hf jobs run \
+          --secrets-file .sec \
+          --flavor a10g-largex4 \
+          ghcr.io/astral-sh/uv:debian \
+          /bin/bash -c \
+          "git clone https://github.com/${{ github.repository }}.git repo && cd repo && uvx uvnote build moe_benchmarks && uvx --from huggingface-hub hf upload --token \$HF_TOKEN --delete --exclude \"*.json\" --repo-type space drbh/uvnote-book-explore site/ /"
