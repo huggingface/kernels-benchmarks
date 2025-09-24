@@ -26,7 +26,7 @@ jobs:
         run: |
           uv venv
           source .venv/bin/activate
-          uv pip install -e https://github.com/drbh/uvnote.git
+          uv pip install https://github.com/drbh/uvnote.git
 
       - name: Build site with uvnote
         run: |
