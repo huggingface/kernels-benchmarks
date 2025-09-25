@@ -117,8 +117,10 @@ torch._dynamo.config.cache_size_limit = 10000
 # I can't seem to get it to work any other way under torch.compile, so any suggestions are welcome!
 torch._dynamo.config.suppress_errors = True
 
-output_dir = pathlib.Path("dump_attention_benchmark")
-output_dir.mkdir(parents=True, exist_ok=True)
+# output_dir = pathlib.Path("dump_attention_benchmark")
+# output_dir.mkdir(parents=True, exist_ok=True)
+
+output_dir = pathlib.Path(".") # output to current directory for upload
 
 batch_size = 1
 num_attention_heads = 24
