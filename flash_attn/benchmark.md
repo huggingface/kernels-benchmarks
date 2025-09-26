@@ -24,6 +24,13 @@ custom_css: |
 ---
 
 
+```python id=nv
+import subprocess
+
+print(subprocess.run(["nvidia-smi"], capture_output=True, text=True).stdout)
+```
+
+
 ```python id=benchmark
 # /// script
 # dependencies = [
@@ -367,6 +374,8 @@ def benchmark_fn(seq_len: int, provider: str):
 
 with torch.inference_mode():
     correctness()
-    benchmark_fn.run(print_data=True, save_path=output_dir.as_posix())
+    fig = benchmark_fn.run(print_data=True, save_path=output_dir.as_posix())
+    fig.savefig(output_dir / "attention_benchmark.png", dpi=300, bbox_inches="tight")
+    print(f"Benchmark plot saved to: {output_dir / 'attention_benchmark.png'}")
 
 ```
