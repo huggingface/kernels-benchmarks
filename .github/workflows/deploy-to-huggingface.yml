@@ -31,4 +31,26 @@ jobs:
           --flavor a10g-largex4 \
           ghcr.io/astral-sh/uv:debian \
           /bin/bash -c \
-          "uv python install 3.11 && export UV_PYTHON=3.11 && git clone https://github.com/${{ github.repository }}.git repo && cd repo && uvx https://github.com/drbh/uvnote.git build . && uvx --from huggingface-hub hf upload --token \$HF_TOKEN --delete --exclude \"*.json\" --exclude \"*.pt\" --repo-type space drbh/uvnote-book-explore site/ /"
+          "
+          # Install Python 3.11 and set as default
+          uv python install 3.11 && \
+          export UV_PYTHON=3.11 && \
+
+          # Clone the repository
+          git clone https://github.com/${{ github.repository }}.git repo && \
+          cd repo && \
+
+          # Build the uvnote site
+          uvx https://github.com/drbh/uvnote.git build . && \
+
+          # Deploy to Hugging Face Space
+          uvx --from huggingface-hub \
+          hf upload \
+            --token \$HF_TOKEN \
+            --delete \
+            --exclude \"*.json\" \
+            --exclude \"*.pt\" \
+            --repo-type space \
+            drbh/uvnote-book-explore \
+            site/ /
+          "
