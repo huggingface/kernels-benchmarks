@@ -21,7 +21,7 @@ import os
 import kernels_benchmark_tools as kbt
 from kernels import get_kernel
 
-hf_kernels_flash_attn = get_kernel("kernels-community/flash-attn")
+hf_kernels_flash_attn = get_kernel("kernels-community/flash-attn", revision="v0.0.2")
 
 
 def hf_flash_attention(query, key, value):
