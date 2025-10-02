@@ -181,7 +181,7 @@ custom_css: |
 This document combines benchmark results from multiple attention implementations
 using cross-file dependencies.
 
-## Combined Summary and Visualization>
+## Combined Summary and Visualization
 
 ![artifact:latency.svg]
 
