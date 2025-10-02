@@ -30,7 +30,7 @@ using cross-file dependencies.
 
 ## Combined Summary and Visualization
 
-```python id=combine collapse-code=true needs=../impls/flash_attention.md:benchmark,../impls/math_attention.md:benchmark,../impls/mem_efficient_attention.md:benchmark,../impls/xformers.md:benchmark,../impls/compiled_variants.md:benchmark_default,../impls/compiled_variants.md:benchmark_max_autotune,../impls/hf_kernels_flash_attn.md:benchmark,../impls/hf_kernels_flash_attn3.md:benchmark outputs=latency.png
+```python id=combine collapse-code=true needs=../impls/flash_attention.md:benchmark,../impls/mem_efficient_attention.md:benchmark,../impls/xformers.md:benchmark,../impls/compiled_variants.md:benchmark_default,../impls/compiled_variants.md:benchmark_max_autotune,../impls/hf_kernels_flash_attn.md:benchmark,../impls/hf_kernels_flash_attn3.md:benchmark outputs=latency.png
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
