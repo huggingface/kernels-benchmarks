@@ -5,52 +5,62 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  OMP_NUM_THREADS: 8
+  MKL_NUM_THREADS: 8
+
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  build-and-deploy-gpu:
+    name: Build & Deploy (GPU)
+    runs-on:
+      group: aws-g6e-4xlarge
+
+    container:
+      image: pytorch/pytorch:2.3.1-cuda12.1-cudnn8-runtime
+      options: --gpus all --ipc host --shm-size "16gb"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Show NVIDIA GPUs
+        run: |
+          nvidia-smi || true
+
+      - name: System deps (git, curl, etc.)
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            git curl ca-certificates build-essential
+          rm -rf /var/lib/apt/lists/*
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
-          version: "latest"
+          version: latest
 
-      - name: Deploy via HF Job
+      - name: Prepare Python 3.11
+        run: |
+          uv python install 3.11
+          echo "UV_PYTHON=3.11" >> "$GITHUB_ENV"
+
+      - name: Build site with uvnote (GPU available)
+        run: |
+          # If your build uses CUDA, it will see the GPUs here.
+          uvx https://github.com/drbh/uvnote.git build .
+
+      - name: Deploy to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Create secrets file for HF job
-          echo "HF_TOKEN=$HF_TOKEN" > .sec
-
-          # Run uvnote build on GPU-enabled HF job and deploy
-          uvx --from huggingface-hub \
-          hf jobs run \
-          --secrets-file .sec \
-          --flavor a10g-largex4 \
-          ghcr.io/astral-sh/uv:debian \
-          /bin/bash -c \
-          "
-          # Install Python 3.11 and set as default
-          uv python install 3.11 && \
-          export UV_PYTHON=3.11 && \
-
-          # Clone the repository
-          git clone https://github.com/${{ github.repository }}.git repo && \
-          cd repo && \
-
-          # Build the uvnote site
-          uvx https://github.com/drbh/uvnote.git build . && \
-
-          # Deploy to Hugging Face Space
-          uvx --from huggingface-hub \
-          hf upload \
-            --token \$HF_TOKEN \
+          # Upload the built site/ directory to the Space, cleaning removed files
+          uvx --from huggingface-hub hf upload \
+            --token "$HF_TOKEN" \
             --delete \
-            --exclude \"*.json\" \
-            --exclude \"*.pt\" \
+            --exclude "*.json" \
+            --exclude "*.pt" \
             --repo-type space \
             drbh/uvnote-book-explore \
             site/ /
-          "
