@@ -12,3 +12,7 @@ wheels/
 .ruff_cache
 .uvnote
 site
+
+# Benchmark output files
+*.jsonl
+*.png

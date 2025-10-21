@@ -1,4 +1,9 @@
-# Torch Compile Variants
+---
+on_github: huggingface/kernels-uvnotes
+---
+
+
+# Torch Compile Variants!
 
 This file benchmarks Flash Attention with different torch.compile modes.
 
@@ -14,7 +19,7 @@ This file benchmarks Flash Attention with different torch.compile modes.
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { git = "https://github.com/drbh/kernels-benchmark-tools.git", branch = "main" }
+# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
 # ///
 import torch
 import sys
@@ -73,6 +78,7 @@ if __name__ == "__main__":
         gen=kbt.attn.gen_qkv,
         ref=kbt.attn.ref_math,
         cmp=kbt.attn.cmp_allclose,
+        profile_trace=True
     )
     kbt.summarize(["attn_default.jsonl"])
 ```
@@ -89,7 +95,7 @@ if __name__ == "__main__":
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { git = "https://github.com/drbh/kernels-benchmark-tools.git", branch = "main" }
+# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
 # ///
 import torch
 import sys

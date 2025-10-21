@@ -1,6 +1,18 @@
-# xFormers Memory Efficient Attention
+---
+on_github: huggingface/kernels-uvnotes
+---
 
-## xFormers Benchmark
+# Flash Attention Implementation
+
+## GPU Info
+
+```python id=nv
+import subprocess
+
+print(subprocess.run(["nvidia-smi"], capture_output=True, text=True).stdout)
+```
+
+## Flash Attention Benchmark
 
 ```python id=benchmark outputs=attn.jsonl
 # /// script
@@ -9,36 +21,34 @@
 #     "numpy",
 #     "torch",
 #     "kernels-benchmark-tools",
-#     "xformers",
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { git = "https://github.com/drbh/kernels-benchmark-tools.git", branch = "main" }
+# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
 # ///
 import torch
 import sys
 import os
 import kernels_benchmark_tools as kbt
-import xformers.ops as xops
 
 
-def xformers_attention(q, k, v):
-    """xFormers memory efficient attention"""
-    # xFormers expects [batch, seq_len, heads, head_dim]
-    return xops.memory_efficient_attention(q, k, v)
-
+def torch_flash(q, k, v):
+    qt, kt, vt = (x.transpose(1, 2).contiguous() for x in (q, k, v))
+    with torch.nn.attention.sdpa_kernel(torch.nn.attention.SDPBackend.FLASH_ATTENTION):
+        o = torch.nn.functional.scaled_dot_product_attention(qt, kt, vt)
+    return o.transpose(1, 2).contiguous()
 
 kbt.add(
-    "xformers_meff",
-    xformers_attention,
-    tags={"family": "xformers", "backend": "memory_efficient", "compile": "none"},
+    "torch_flash_ma",
+    torch_flash,
+    tags={"family": "torch-sdpa", "backend": "FLASH", "compile": "max-autotune"},
 )
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
     dtype = "float32" if device == "cpu" else "bfloat16"
 
-    # Flux-like workloads
+    # Flux-like workloads scaled down for CPU testing
     base = 1024 if device == "cuda" else 512
     flux_sizes = (
         [128, 256, 320, 384, 448, 512] if device == "cuda" else [64, 128, 192, 256]
@@ -69,6 +79,7 @@ if __name__ == "__main__":
         gen=kbt.attn.gen_qkv,
         ref=kbt.attn.ref_math,
         cmp=kbt.attn.cmp_allclose,
+        profile_trace=True
     )
     kbt.summarize(["attn.jsonl"])
 ```

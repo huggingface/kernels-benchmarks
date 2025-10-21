@@ -1,6 +1,10 @@
-# HF Kernels - Flash Attention 3
+---
+on_github: huggingface/kernels-uvnotes
+---
 
-## HuggingFace Kernels Flash Attention 3 Benchmark
+# SageAttention Implementation
+
+## SageAttention Benchmark (INT8 Quantized)
 
 ```python id=benchmark outputs=attn.jsonl
 # /// script
@@ -8,37 +12,45 @@
 # dependencies = [
 #     "numpy",
 #     "torch",
-#     "kernels-benchmark-tools",
 #     "kernels",
+#     "kernels-benchmark-tools",
+#     "sageattention",
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { git = "https://github.com/drbh/kernels-benchmark-tools.git", branch = "main" }
+# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
 # ///
 import torch
 import sys
 import os
 import kernels_benchmark_tools as kbt
+# from sageattention import sageattn_qk_int8_pv_fp16_cuda
+
+
+# def sage_attention(q, k, v):
+#     """SageAttention with INT8 Q/K quantization and FP16 P/V"""
+#     return sageattn_qk_int8_pv_fp16_cuda(q, k, v, tensor_layout="NHD")
+
 from kernels import get_kernel
 
-hf_kernels_flash_attn3 = get_kernel("kernels-community/flash-attn3")
+hf_kernels_sage_attn = get_kernel("kernels-community/sage_attention")
 
 
-def hf_flash_attention3(query, key, value):
-    return hf_kernels_flash_attn3.flash_attn_func(query, key, value, causal=False)[0]
-
+def sage_attention(query, key, value):
+    """HuggingFace Kernels Flash Attention"""
+    return hf_kernels_sage_attn.fwd(query, key, value, is_causal=False)[0]
 
 kbt.add(
-    "hf_kernels_flash_attn3",
-    hf_flash_attention3,
-    tags={"family": "hf-kernels", "backend": "flash-attn3", "compile": "none"},
+    "sage_int8_fp16",
+    sage_attention,
+    tags={"family": "sageattention", "backend": "int8_fp16_cuda", "compile": "none"},
 )
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     if device == "cpu":
-        print("HF Kernels Flash Attention 3 requires CUDA - skipping benchmark")
+        print("SageAttention requires CUDA - skipping benchmark")
         sys.exit(0)
 
     dtype = "bfloat16"
@@ -72,6 +84,7 @@ if __name__ == "__main__":
         gen=kbt.attn.gen_qkv,
         ref=kbt.attn.ref_math,
         cmp=kbt.attn.cmp_allclose,
+        profile_trace=True
     )
     kbt.summarize(["attn.jsonl"])
 ```

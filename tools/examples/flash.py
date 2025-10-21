@@ -1,16 +1,3 @@
-# Flash Attention Implementation
-
-## GPU Info
-
-```python id=nv
-import subprocess
-
-print(subprocess.run(["nvidia-smi"], capture_output=True, text=True).stdout)
-```
-
-## Flash Attention Benchmark
-
-```python id=benchmark outputs=attn.jsonl
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
@@ -20,7 +7,7 @@ print(subprocess.run(["nvidia-smi"], capture_output=True, text=True).stdout)
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { git = "https://github.com/drbh/kernels-benchmark-tools.git", branch = "main" }
+# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
 # ///
 import torch
 import sys
@@ -34,10 +21,37 @@ def torch_flash(q, k, v):
         o = torch.nn.functional.scaled_dot_product_attention(qt, kt, vt)
     return o.transpose(1, 2).contiguous()
 
+
+def torch_math(q, k, v):
+    qt, kt, vt = (x.transpose(1, 2).contiguous() for x in (q, k, v))
+    with torch.nn.attention.sdpa_kernel(torch.nn.attention.SDPBackend.MATH):
+        o = torch.nn.functional.scaled_dot_product_attention(qt, kt, vt)
+    return o.transpose(1, 2).contiguous()
+
+
+def torch_mem_eff(q, k, v):
+    qt, kt, vt = (x.transpose(1, 2).contiguous() for x in (q, k, v))
+    with torch.nn.attention.sdpa_kernel(
+        torch.nn.attention.SDPBackend.EFFICIENT_ATTENTION
+    ):
+        o = torch.nn.functional.scaled_dot_product_attention(qt, kt, vt)
+    return o.transpose(1, 2).contiguous()
+
+
 kbt.add(
     "torch_flash_ma",
     torch_flash,
     tags={"family": "torch-sdpa", "backend": "FLASH", "compile": "max-autotune"},
+)
+kbt.add(
+    "torch_math",
+    torch_math,
+    tags={"family": "torch-sdpa", "backend": "MATH", "compile": "none"},
+)
+kbt.add(
+    "torch_mem_eff",
+    torch_mem_eff,
+    tags={"family": "torch-sdpa", "backend": "EFFICIENT", "compile": "none"},
 )
 
 if __name__ == "__main__":
@@ -76,5 +90,22 @@ if __name__ == "__main__":
         ref=kbt.attn.ref_math,
         cmp=kbt.attn.cmp_allclose,
     )
+
+    # Generate summary and visualization
+    print("\n" + "=" * 60)
+    print("BENCHMARK SUMMARY")
+    print("=" * 60)
+
     kbt.summarize(["attn.jsonl"])
-```
+
+    print("\n" + "=" * 60)
+    print("GENERATING VISUALIZATION")
+    print("=" * 60)
+
+    try:
+        kbt.viz(["attn.jsonl"])
+        print("Visualization saved as latency.png")
+    except ImportError:
+        print("Visualization requires matplotlib. Install with: uv add matplotlib")
+    except Exception as e:
+        print(f"Visualization failed: {e}")

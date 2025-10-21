@@ -1,6 +1,10 @@
-# HF Kernels - Flash Attention
+---
+on_github: huggingface/kernels-uvnotes
+---
 
-## HuggingFace Kernels Flash Attention Benchmark
+# xFormers Memory Efficient Attention
+
+## xFormers Benchmark
 
 ```python id=benchmark outputs=attn.jsonl
 # /// script
@@ -9,46 +13,42 @@
 #     "numpy",
 #     "torch",
 #     "kernels-benchmark-tools",
-#     "kernels",
+#     "xformers",
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { git = "https://github.com/drbh/kernels-benchmark-tools.git", branch = "main" }
+# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
 # ///
 import torch
 import sys
 import os
 import kernels_benchmark_tools as kbt
-from kernels import get_kernel
-
-hf_kernels_flash_attn = get_kernel("kernels-community/flash-attn", revision="v0.0.2")
+import xformers.ops as xops
 
 
-def hf_flash_attention(query, key, value):
-    """HuggingFace Kernels Flash Attention"""
-    return hf_kernels_flash_attn.fwd(query, key, value, is_causal=False)[0]
+def xformers_attention(q, k, v):
+    """xFormers memory efficient attention"""
+    # xFormers expects [batch, seq_len, heads, head_dim]
+    return xops.memory_efficient_attention(q, k, v)
 
 
 kbt.add(
-    "hf_kernels_flash_attn",
-    hf_flash_attention,
-    tags={"family": "hf-kernels", "backend": "flash-attn", "compile": "none"},
+    "xformers_meff",
+    xformers_attention,
+    tags={"family": "xformers", "backend": "memory_efficient", "compile": "none"},
 )
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
-
-    if device == "cpu":
-        print("HF Kernels Flash Attention requires CUDA - skipping benchmark")
-        sys.exit(0)
-
-    dtype = "bfloat16"
+    dtype = "float32" if device == "cpu" else "bfloat16"
 
     # Flux-like workloads
-    base = 1024
-    flux_sizes = [128, 256, 320, 384, 448, 512]
-    heads = 24
-    head_dim = 128
+    base = 1024 if device == "cuda" else 512
+    flux_sizes = (
+        [128, 256, 320, 384, 448, 512] if device == "cuda" else [64, 128, 192, 256]
+    )
+    heads = 24 if device == "cuda" else 8
+    head_dim = 128 if device == "cuda" else 64
 
     wl = []
     for L in flux_sizes:
@@ -73,6 +73,7 @@ if __name__ == "__main__":
         gen=kbt.attn.gen_qkv,
         ref=kbt.attn.ref_math,
         cmp=kbt.attn.cmp_allclose,
+        profile_trace=True
     )
     kbt.summarize(["attn.jsonl"])
 ```
