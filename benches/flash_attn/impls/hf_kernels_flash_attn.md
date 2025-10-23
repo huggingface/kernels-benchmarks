@@ -18,7 +18,7 @@ on_huggingface: kernels-community/flash-attn2
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
+# kernels-benchmark-tools = { path = "../../../../../tools", editable = true }
 # ///
 import torch
 import sys

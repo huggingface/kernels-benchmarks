@@ -12,13 +12,13 @@ Based on kernels-community `layer-norm` kernel.
 # requires-python = ">=3.10"
 # dependencies = [
 #     "numpy",
-#     "torch",
+#     "torch==2.8.0",
 #     "kernels",
 #     "kernels-benchmark-tools",
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
+# kernels-benchmark-tools = { path = "../../../../../tools", editable = true }
 # ///
 import torch
 from kernels import get_kernel

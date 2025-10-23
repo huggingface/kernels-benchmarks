@@ -36,6 +36,12 @@ jobs:
             git curl ca-certificates build-essential
           rm -rf /var/lib/apt/lists/*
 
+      - name: Install Node.js (for act)
+        if: ${{ env.ACT }}
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+          apt-get install -y nodejs
+
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
@@ -43,24 +49,27 @@ jobs:
 
       - name: Prepare Python 3.11
         run: |
+          echo "Installing Python 3.11"
           uv python install 3.11
           echo "UV_PYTHON=3.11" >> "$GITHUB_ENV"
 
       - name: Build site with uvnote (GPU available)
         run: |
           # If your build uses CUDA, it will see the GPUs here.
-          uvx https://github.com/drbh/uvnote.git build benches
+          # --strict will fail if any cells do not succeed.
+          uvx https://github.com/drbh/uvnote.git build benches --strict
 
       - name: Deploy to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           # Upload the built site/ directory to the Space, cleaning removed files
-          uvx --from huggingface-hub hf upload \
-            --token "$HF_TOKEN" \
-            --delete \
-            --exclude "*.json" \
-            --exclude "*.pt" \
-            --repo-type space \
-            drbh/uvnote-book-explore \
-            site/ /
+          echo "Deploying to Hugging Face Space drbh/uvnote-book-explore"
+          # uvx --from huggingface-hub hf upload \
+          #   --token "$HF_TOKEN" \
+          #   --delete \
+          #   --exclude "*.json" \
+          #   --exclude "*.pt" \
+          #   --repo-type space \
+          #   drbh/uvnote-book-explore \
+          #   site/ /

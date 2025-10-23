@@ -27,9 +27,15 @@ def gen_inputs(wl: dict) -> Sequence[torch.Tensor]:
 def ref_layer_norm(inputs: Sequence[torch.Tensor], eps: float = 1e-5) -> torch.Tensor:
     """Reference LayerNorm in float32 with affine (weight, bias)."""
     x, weight, bias = inputs
-    x_f32 = x.to(torch.float32)
-    w_f32 = weight.to(torch.float32)
-    b_f32 = bias.to(torch.float32)
+    # x_f32 = x.to(torch.float32)
+    # w_f32 = weight.to(torch.float32)
+    # b_f32 = bias.to(torch.float32)
+
+    # make them bfloat16/float16 compatible
+    x_f32 = x.bfloat16()
+    w_f32 = weight.bfloat16()
+    b_f32 = bias.bfloat16()
+
     mean = x_f32.mean(dim=-1, keepdim=True)
     var = x_f32.var(dim=-1, keepdim=True, unbiased=False)
     y = (x_f32 - mean) * torch.rsqrt(var + eps)

@@ -11,7 +11,7 @@ title: "LayerNorm Benchmark - Combined Results"
 # requires-python = ">=3.10"
 # dependencies = ["torch", "kernels-benchmark-tools", "matplotlib"]
 # [tool.uv.sources]
-# kernels-benchmark-tools = { path = "../../../tools", editable = true }
+# kernels-benchmark-tools = { path = "../../../../../tools", editable = true }
 # ///
 from kernels_benchmark_tools.core.visuals import generate_combined_results
 

@@ -19,12 +19,12 @@ print(subprocess.run(["nvidia-smi"], capture_output=True, text=True).stdout)
 # requires-python = ">=3.10"
 # dependencies = [
 #     "numpy",
-#     "torch",
+#     "torch==2.8.0",
 #     "kernels-benchmark-tools",
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
+# kernels-benchmark-tools = { path = "../../../../../tools", editable = true }
 # ///
 import torch
 import sys

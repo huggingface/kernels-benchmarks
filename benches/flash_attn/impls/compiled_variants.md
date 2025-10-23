@@ -14,12 +14,12 @@ This file benchmarks Flash Attention with different torch.compile modes.
 # requires-python = ">=3.10"
 # dependencies = [
 #     "numpy",
-#     "torch",
+#     "torch==2.8.0",
 #     "kernels-benchmark-tools",
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
+# kernels-benchmark-tools = { path = "../../../../../tools", editable = true }
 # ///
 import torch
 import sys
@@ -90,12 +90,12 @@ if __name__ == "__main__":
 # requires-python = ">=3.10"
 # dependencies = [
 #     "numpy",
-#     "torch",
+#     "torch==2.8.0",
 #     "kernels-benchmark-tools",
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
+# kernels-benchmark-tools = { path = "../../../../../tools", editable = true }
 # ///
 import torch
 import sys

@@ -20,13 +20,13 @@ This document combines benchmark results from multiple SwiGLU activation impleme
 # requires-python = ">=3.10"
 # dependencies = [
 #     "numpy",
-#     "torch",
+#     "torch==2.8.0",
 #     "kernels-benchmark-tools",
 #     "matplotlib",
 # ]
 #
 # [tool.uv.sources]
-# kernels-benchmark-tools = { path = "/home/ubuntu/Projects/kernels-benchmarks-consolidated/tools", editable = true }
+# kernels-benchmark-tools = { path = "../../../../../tools", editable = true }
 # ///
 from kernels_benchmark_tools.core.visuals import generate_combined_results
 
