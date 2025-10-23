@@ -65,11 +65,11 @@ jobs:
         run: |
           # Upload the built site/ directory to the Space, cleaning removed files
           echo "Deploying to Hugging Face Space drbh/uvnote-book-explore"
-          # uvx --from huggingface-hub hf upload \
-          #   --token "$HF_TOKEN" \
-          #   --delete \
-          #   --exclude "*.json" \
-          #   --exclude "*.pt" \
-          #   --repo-type space \
-          #   drbh/uvnote-book-explore \
-          #   site/ /
+          uvx --from huggingface-hub hf upload \
+            --token "$HF_TOKEN" \
+            --delete \
+            --exclude "*.json" \
+            --exclude "*.pt" \
+            --repo-type space \
+            drbh/uvnote-book-explore \
+            site/ /
