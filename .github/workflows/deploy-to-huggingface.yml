@@ -72,4 +72,4 @@ jobs:
             --exclude "*.pt" \
             --repo-type space \
             drbh/uvnote-book-explore \
-            site/ /
+            site/
