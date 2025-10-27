@@ -16,3 +16,6 @@ site
 # Benchmark output files
 *.jsonl
 *.png
+
+bin
+.bak

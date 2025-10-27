@@ -15,7 +15,7 @@ This document combines benchmark results from multiple SwiGLU activation impleme
 
 ![artifact:latency.svg]
 
-```python id=combine collapse-code=true needs=../impls/hf_kernels_swiglu.md:benchmark,../impls/torch_swiglu.md:benchmark,../impls/compiled_swiglu.md:benchmark outputs=latency.svg
+```python id=combine collapse-code=true needs=../impls/hf_kernels_swiglu.md:benchmark,../impls/torch_swiglu.md:benchmark outputs=latency.svg
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
@@ -34,7 +34,7 @@ from kernels_benchmark_tools.core.visuals import generate_combined_results
 cache_env_map = {
     "HF Kernels SwiGLU": "UVNOTE_FILE_HF_KERNELS_SWIGLU_BENCHMARK",
     "PyTorch SwiGLU": "UVNOTE_FILE_TORCH_SWIGLU_BENCHMARK",
-    "Compiled SwiGLU": "UVNOTE_FILE_COMPILED_SWIGLU_BENCHMARK",
+    # "Compiled SwiGLU": "UVNOTE_FILE_COMPILED_SWIGLU_BENCHMARK",
 }
 
 # Generate combined results with visualization

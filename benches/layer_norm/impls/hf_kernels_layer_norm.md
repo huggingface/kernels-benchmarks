@@ -7,7 +7,7 @@ Based on kernels-community `layer-norm` kernel.
 
 ## LayerNorm Benchmark (HF Kernels)
 
-```python id=benchmark outputs=ln.jsonl
+```python id=benchmark outputs=layer_norm.jsonl
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
@@ -21,10 +21,13 @@ Based on kernels-community `layer-norm` kernel.
 # kernels-benchmark-tools = { path = "../../../../../tools", editable = true }
 # ///
 import torch
+import sys
+from kernels_benchmark_tools import KernelTypeEnum, run_benchmark
 from kernels import get_kernel
-import kernels_benchmark_tools as kbt
 
+# Load the layer norm kernel
 layer_norm_kernel = get_kernel("kernels-community/layer-norm")
+
 
 def hf_kernels_layer_norm(x, weight, bias, eps: float = 1e-5):
     B, S, D = x.shape
@@ -47,27 +50,11 @@ def hf_kernels_layer_norm(x, weight, bias, eps: float = 1e-5):
     )[0].view(B, S, D)
     return out
 
-kbt.add(
-    "hf_kernels_layer_norm",
-    hf_kernels_layer_norm,
-    tags={"family": "hf-kernels", "repo": "kernels-community/layer-norm", "op": "layer_norm"},
+
+run_benchmark(
+    kernel_type=KernelTypeEnum.LAYER_NORM,
+    impl_name="hf_kernels_layer_norm",
+    impl_tags={"family": "hf-kernels", "repo": "kernels-community/layer-norm", "op": "layer_norm"},
+    impl_func=hf_kernels_layer_norm,
 )
-
-if __name__ == "__main__":
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    dtype = "float32" if device == "cpu" else "bfloat16"
-
-    wl = list(kbt.layer_norm.llama_workloads(dtype)) if device == "cuda" else list(kbt.layer_norm.cpu_workloads(dtype))
-
-    kbt.run(
-        wl,
-        jsonl="ln.jsonl",
-        reps=5,
-        warmup=2,
-        gen=kbt.layer_norm.gen_inputs,
-        ref=kbt.layer_norm.ref_layer_norm,
-        cmp=kbt.layer_norm.cmp_allclose,
-        profile_trace=False,
-    )
-    kbt.summarize(["ln.jsonl"])
 ```

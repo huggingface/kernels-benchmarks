@@ -11,7 +11,7 @@ def _dtype(s: str) -> torch.dtype:
     }[s]
 
 
-def gen_qkv(wl: dict) -> Sequence[torch.Tensor]:
+def gen_inputs(wl: dict) -> Sequence[torch.Tensor]:
     torch.manual_seed(int(wl.get("seed", 0)))
     B, S, H, D = wl["batch"], wl["seq_len"], wl["heads"], wl["head_dim"]
     dt = _dtype(wl.get("dtype", "bfloat16"))
@@ -26,7 +26,7 @@ def gen_qkv(wl: dict) -> Sequence[torch.Tensor]:
     return (sample(), sample(), sample())
 
 
-def ref_math(inputs: Sequence[torch.Tensor]) -> torch.Tensor:
+def ref_impl(inputs: Sequence[torch.Tensor]) -> torch.Tensor:
     q, k, v = inputs
     qf, kf, vf = (x.to(torch.float32).transpose(1, 2).contiguous() for x in (q, k, v))
     with torch.nn.attention.sdpa_kernel(torch.nn.attention.SDPBackend.MATH):
@@ -50,16 +50,16 @@ def cmp_allclose(out: torch.Tensor, ref: torch.Tensor, rtol=2e-2, atol=2e-2) -> 
     }
 
 
-def flux_workloads(dtype="bfloat16") -> Iterable[dict]:
+def workloads(dtype="bfloat16", device="cuda") -> Iterable[dict]:
     base = 4096
     for L in [128, 256, 320, 384, 448, 512]:
         yield {
-            "name": f"flux_L{L}",
+            "name": f"{device}_attn_L{L}_{dtype}",
             "batch": 1,
             "seq_len": base + L,
             "heads": 24,
             "head_dim": 128,
             "dtype": dtype,
-            "device": "cuda",
+            "device": device,
             "seed": 0,
         }
