@@ -26,7 +26,7 @@ def gen_inputs(wl: dict) -> Sequence[torch.Tensor]:
     return (x, weight)
 
 
-def ref_rms_norm(inputs: Sequence[torch.Tensor], eps: float = 1e-6) -> torch.Tensor:
+def ref_impl(inputs: Sequence[torch.Tensor], eps: float = 1e-6) -> torch.Tensor:
     """Reference RMS norm implementation using float32 for numerical stability."""
     x, weight = inputs
 
@@ -88,3 +88,22 @@ def cpu_workloads(dtype="float32") -> Iterable[dict]:
                 "device": "cpu",
                 "seed": 0,
             }
+
+
+def workloads(dtype="bfloat16", device="cuda") -> Iterable[dict]:
+    """Generate workloads for RMS norm benchmarking."""
+    if device == "cpu":
+        yield from cpu_workloads(dtype)
+    else:
+        # Use LLaMA-style workloads for GPU
+        for seq_len in [512, 1024, 2048]:
+            for hidden_dim in [2048, 4096, 8192]:
+                yield {
+                    "name": f"{device}_S{seq_len}_D{hidden_dim}",
+                    "batch": 1,
+                    "seq_len": seq_len,
+                    "hidden_dim": hidden_dim,
+                    "dtype": dtype,
+                    "device": device,
+                    "seed": 0,
+                }

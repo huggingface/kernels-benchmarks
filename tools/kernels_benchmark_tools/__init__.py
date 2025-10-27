@@ -3,6 +3,9 @@ from . import rms_norm
 from . import layer_norm
 from . import moe
 from . import activation
+from . import causal_conv1d
+from . import relu
+from . import rotary
 from . import core
 from .core.harness import add, run
 from .core.tools import summarize, viz
@@ -21,6 +24,9 @@ class KernelTypeEnum(str, Enum):
     LAYER_NORM = "layer_norm"
     MOE = "moe"
     ACTIVATION = "activation"
+    CAUSAL_CONV1D = "causal_conv1d"
+    RELU = "relu"
+    ROTARY = "rotary"
 
 
 # Map from type to module for implementation
@@ -30,6 +36,9 @@ KERNEL_MODULES = {
     KernelTypeEnum.LAYER_NORM: layer_norm,
     KernelTypeEnum.MOE: moe,
     KernelTypeEnum.ACTIVATION: activation,
+    KernelTypeEnum.CAUSAL_CONV1D: causal_conv1d,
+    KernelTypeEnum.RELU: relu,
+    KernelTypeEnum.ROTARY: rotary,
 }
 
 ## Benchmarking Functions
@@ -87,6 +96,9 @@ __all__ = [
     "layer_norm",
     "moe",
     "activation",
+    "causal_conv1d",
+    "relu",
+    "rotary",
     "core",
     "add",
     "run",
