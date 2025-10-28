@@ -14,7 +14,6 @@ on_github: huggingface/kernels-uvnotes
 #     "torch==2.8.0",
 #     "kernels",
 #     "kernels-benchmark-tools",
-#     "sageattention",
 # ]
 #
 # [tool.uv.sources]
