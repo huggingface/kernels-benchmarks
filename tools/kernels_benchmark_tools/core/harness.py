@@ -178,9 +178,9 @@ def run(
                         "p50": p50,
                         "p90": p90,
                         "mean": float(stats.fmean(times)),
-                        "iqr": iqr,  # NEW: Interquartile range
-                        "raw_times": times,  # NEW: All raw timing data
-                        "has_warnings": has_warnings,  # NEW: High variance warning
+                        "iqr": iqr,
+                        "raw_times": times,
+                        "has_warnings": has_warnings,
                         "reps": reps,
                         "warmup": warmup,
                     },
