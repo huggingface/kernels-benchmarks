@@ -130,3 +130,19 @@ def workloads(dtype="float32", device="cuda") -> Iterable[dict]:
                         "device": device,
                         "seed": 0,
                     }
+
+
+# single workload for quick testing
+def _workloads(dtype="float32", device="cuda") -> Iterable[dict]:
+    print("✅ Using single workload for quick testing.")
+    yield {
+        "name": f"{device}_B1_S128_H8_D64_R32",
+        "batch": 1,
+        "seqlen": 128,
+        "num_heads": 8,
+        "head_dim": 64,
+        "rotary_dim": 32,
+        "dtype": dtype,
+        "device": device,
+        "seed": 0,
+    }

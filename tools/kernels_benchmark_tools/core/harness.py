@@ -92,6 +92,10 @@ def run(
     env = _env_block()
     now = lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
+    # clear old results
+    if os.path.exists(jsonl):
+        os.remove(jsonl)
+
     for wl in workloads:
         inputs = gen(wl)
         ref_out = ref(inputs)

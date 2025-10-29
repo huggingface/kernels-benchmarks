@@ -50,11 +50,15 @@ def run_benchmark(
     impl_name: str | None = None,
     impl_tags: dict | None = None,
     impl_func=None,
+    reps: int = 5,
+    warmup: int = 2,
+    dtype: str | None = None,
+    device: str | None = None,
     **kwargs,
 ):
     # Determine device and dtype (TODO: allow user override)
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    dtype = "float32" if device == "cpu" else "bfloat16"
+    device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+    dtype = dtype or ("float32" if device == "cpu" else "bfloat16")
 
     # Get the kernel module based on type (TODO: handle invalid type)
     kernel_module = KERNEL_MODULES[kernel_type]
@@ -77,8 +81,8 @@ def run_benchmark(
     run(
         wl,
         jsonl=f"{kernel_type.value}.jsonl",
-        reps=5,
-        warmup=2,
+        reps=reps,
+        warmup=warmup,
         gen=kernel_module.gen_inputs,
         ref=kernel_module.ref_impl,
         cmp=kernel_module.cmp_allclose,

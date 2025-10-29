@@ -60,5 +60,6 @@ run_benchmark(
     impl_name="hf_kernels_rotary",
     impl_tags={"family": "hf-kernels", "backend": "cuda"},
     impl_func=hf_kernels_rotary,
+    dtype="float32",
 )
 ```

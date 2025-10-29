@@ -4,8 +4,7 @@
 ## [Layer Norm](layer_norm/)
 
 <div class="artifact-preview">
-<object data="layer_norm/results/artifacts/combine/latency.svg" type="image/svg+xml" width="800">
-</object>
+<img src="layer_norm/results/artifacts/combine/latency.svg" alt="Layer Norm Latency" width="800">
 </div>
 
 | Implementation | Description |
@@ -16,8 +15,7 @@
 ## [Rotary Position Embeddings](rotary/)
 
 <div class="artifact-preview">
-<object data="rotary/results/artifacts/combine/latency.svg" type="image/svg+xml" width="800">
-</object>
+<img src="rotary/results/artifacts/combine/latency.svg" alt="Rotary Position Embeddings Latency" width="800">
 </div>
 
 | Implementation | Description |
@@ -28,8 +26,7 @@
 ## [Flash Attention](flash_attn/)
 
 <div class="artifact-preview">
-<object data="flash_attn/results/artifacts/combine/latency.svg" type="image/svg+xml" width="800">
-</object>
+<img src="flash_attn/results/artifacts/combine/latency.svg" alt="Flash Attention Latency" width="800">
 </div>
 
 | Implementation | Description |
@@ -44,8 +41,7 @@
 ## [Causal Conv1D](causal_conv1d/)
 
 <div class="artifact-preview">
-<object data="causal_conv1d/results/artifacts/combine/latency.svg" type="image/svg+xml" width="800">
-</object>
+<img src="causal_conv1d/results/artifacts/combine/latency.svg" alt="Causal Conv1D Latency" width="800">
 </div>
 
 | Implementation | Description |
@@ -56,8 +52,7 @@
 ## [Activation](activation/)
 
 <div class="artifact-preview">
-<object data="activation/results/artifacts/combine/latency.svg" type="image/svg+xml" width="800">
-</object>
+<img src="activation/results/artifacts/combine/latency.svg" alt="Activation Latency" width="800">
 </div>
 
 | Implementation | Description |
@@ -68,8 +63,7 @@
 ## [ReLU](relu/)
 
 <div class="artifact-preview">
-<object data="relu/results/artifacts/combine/latency.svg" type="image/svg+xml" width="800">
-</object>
+<img src="relu/results/artifacts/combine/latency.svg" alt="ReLU Latency" width="800">
 </div>
 
 | Implementation | Description |
