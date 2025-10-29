@@ -57,7 +57,7 @@ jobs:
         run: |
           # If your build uses CUDA, it will see the GPUs here.
           # --strict will fail if any cells do not succeed.
-          uvx https://github.com/drbh/uvnote.git build benches --strict
+          uvx --refresh https://github.com/drbh/uvnote.git build benches --strict
 
       - name: Deploy to Hugging Face Space
         env:
