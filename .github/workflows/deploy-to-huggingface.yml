@@ -64,11 +64,11 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           # Upload the built site/ directory to the Space, cleaning removed files
-          echo "Deploying to Hugging Face Space drbh/uvnote-book-explore"
+          echo "Deploying to Hugging Face Space kernels-community/kernels-benchmarks"
           uvx --from huggingface-hub hf upload \
             --token "$HF_TOKEN" \
             --exclude "*.json" \
             --exclude "*.pt" \
             --repo-type space \
-            drbh/uvnote-book-explore \
+            kernels-community/kernels-benchmarks \
             site/ /
