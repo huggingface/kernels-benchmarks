@@ -1,5 +1,5 @@
 ---
-on_github: huggingface/kernels-uvnotes
+on_github: huggingface/kernels-benchmarks
 ---
 
 # Torch LayerNorm Implementation

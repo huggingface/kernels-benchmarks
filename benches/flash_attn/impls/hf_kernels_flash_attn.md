@@ -1,6 +1,6 @@
 ---
-on_github: huggingface/kernels-uvnotes
-on_huggingface: kernels-community/flash-attn2
+on_github: huggingface/kernels-benchmarks
+on_huggingface: kernels-community/flash-attn
 ---
 
 # HF Kernels - Flash Attention

@@ -1,5 +1,6 @@
 ---
-on_github: huggingface/kernels-uvnotes
+on_github: huggingface/kernels-benchmarks
+on_huggingface: kernels-community/causal-conv1d
 ---
 
 # HF Kernels - Causal Conv1D

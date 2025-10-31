@@ -1,5 +1,6 @@
 ---
-on_github: huggingface/kernels-uvnotes
+on_github: huggingface/kernels-benchmarks
+on_huggingface: drbh/yamoe
 ---
 
 # GptOssExperts - OpenAI-style MoE
@@ -13,7 +14,7 @@ print(subprocess.run(["nvidia-smi"], capture_output=True, text=True).stdout)
 
 ## OpenAI-style MoE Benchmark (GptOssExperts Reference)
 
-```python id=benchmark outputs=openai_moe.jsonl
+```python id=benchmark outputs=openai_moe.jsonl timeout=600
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [

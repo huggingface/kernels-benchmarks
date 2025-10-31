@@ -1,5 +1,5 @@
 ---
-on_github: huggingface/kernels-uvnotes
+on_github: huggingface/kernels-benchmarks
 ---
 
 # Binned PyTorch - OpenAI-style MoE
@@ -13,7 +13,7 @@ print(subprocess.run(["nvidia-smi"], capture_output=True, text=True).stdout)
 
 ## OpenAI-style MoE Benchmark (Binned PyTorch)
 
-```python id=benchmark outputs=openai_moe.jsonl
+```python id=benchmark outputs=openai_moe.jsonl timeout=1200
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [

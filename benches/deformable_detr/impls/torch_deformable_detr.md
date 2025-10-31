@@ -1,3 +1,7 @@
+---
+on_github: huggingface/kernels-benchmarks
+---
+
 # PyTorch Native - Deformable DETR
 
 ## GPU Info
