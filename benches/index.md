@@ -1,3 +1,11 @@
+<!-- <div class="linkbar">
+<a target="_blank" href="https://github.com/huggingface/kernels">Python Library</a> |
+<a target="_blank" href="https://github.com/huggingface/kernel-builder">Builder</a> |
+<a target="_blank" href="https://github.com/huggingface/kernels-community">Community</a> |
+<a target="_blank" href="https://huggingface.co/kernels-community">Community Hub</a> |
+<a target="_blank" href="https://github.com/huggingface/kernels-benchmarks">Benchmarks</a>
+</div -->
+
 # KERNELS COMMUNITY BENCHMARKS
 
 This report aggregates latency and performance benchmarks across core model components.  
@@ -6,71 +14,55 @@ Each section includes:
 - Links to detailed implementation benchmarks  
 
 ## TABLE OF CONTENTS
-- [METHODOLOGY](#methodology)
-- [LAYER NORMALIZATION](#layer-normalization)
-- [ROTARY POSITION EMBEDDINGS](#rotary-position-embeddings)
-- [FLASH ATTENTION](#flash-attention)
-- [CAUSAL CONV1D](#causal-conv1d)
 - [ACTIVATION FUNCTIONS](#activation-functions)
-- [NOTES](#notes)
+- [FLASH ATTENTION](#flash-attention)
+- [DEFORMABLE DETR](#deformable-detr)
+- [OPENAI-STYLE MOE](#openai-style-moe)
+- [ROTARY POSITION EMBEDDINGS](#rotary-position-embeddings)
+- [CAUSAL CONV1D](#causal-conv1d)
+- [LAYER NORMALIZATION](#layer-normaliz=ation)
 
 
 ## METHODOLOGY
 
-Each benchmark is run with the [Kernels Benchmarking Framework](https://github.com/huggingface/kernels-benchmarks) and follows these principles:  
+Each benchmark is run with the
+<a target="_blank" href="https://github.com/huggingface/kernels-benchmarks">Kernels Benchmarking Framework</a> and follows these principles:  
 - a reference implementation (usually PyTorch native) is included for baseline comparison  
 - multiple input sizes and batch sizes are tested to reflect real-world usage  
 - runs are repeatable via python virtual environments and documented dependencies  
 - results are collected and visualized using standardized scripts  
 
----
+
+<br/>
+
+## BENCHMARKS
 
 <div class="alert">
   <strong>Note:</strong> Latency values are measured in milliseconds (ms). Lower values indicate better performance.
 </div>
 
 
-## LAYER NORMALIZATION
+
+## ACTIVATION FUNCTIONS
 
 <div class="artifact-preview">
-  <img src="layer_norm/results/artifacts/combine/latency.svg" alt="Layer Norm Latency" width="800">
+  <img src="activation/results/artifacts/combine/latency.svg" alt="Activation Latency" width="800">
 </div>
 
-| Implementation        | Description                        |
-| --------------------- | ---------------------------------- |
-| HF Kernels Layer Norm | HuggingFace kernels implementation |
-| PyTorch Layer Norm    | PyTorch native implementation      |
+| Implementation    | Description                               | Source                                           | HF                                   | Bench                                            |
+| ----------------- | ----------------------------------------- | ------------------------------------------------ | ------------------------------------ | ------------------------------------------------ |
+| HF Kernels SwiGLU | HuggingFace kernels SwiGLU implementation | [GitHub](https://github.com/huggingface/kernels) | [HF](https://huggingface.co/kernels) | [Bench](activation/impls/hf_kernels_swiglu.html) |
+| PyTorch SwiGLU    | PyTorch native SwiGLU implementation      | -                                                | -                                    | [Bench](activation/impls/torch_swiglu.html)      |
 
-<p align="center">
-  <!-- <button onclick="window.location.href='layer_norm/'" style="margin-left: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;"> -->
-  <button 
-    onclick="window.location.href='layer_norm/'"
-    class="btn">
-    Explore Full Bench
-  </button>
-</p>
-
----
-
-
-## ROTARY POSITION EMBEDDINGS
-
-<div class="artifact-preview">
-  <img src="rotary/results/artifacts/combine/latency.svg" alt="Rotary Position Embeddings Latency" width="800">
-</div>
-
-| Implementation    | Description                        |
-| ----------------- | ---------------------------------- |
-| HF Kernels Rotary | HuggingFace kernels implementation |
-| PyTorch Rotary    | PyTorch native implementation      |
 
 <p align="center">
   <button
-    onclick="window.location.href='rotary/'"
+    onclick="window.location.href='/#/activation/'"
     class="btn">
     Explore Full Bench
   </button>
 </p>
+
 
 ---
 
@@ -81,14 +73,14 @@ Each benchmark is run with the [Kernels Benchmarking Framework](https://github.c
   <img src="flash_attn/results/artifacts/combine/latency.svg" alt="Flash Attention Latency" width="800">
 </div>
 
-| Implementation               | Description                               |
-| ---------------------------- | ----------------------------------------- |
-| Flash Attention              | Flash Attention implementation            |
-| HF Kernels Flash Attention   | HuggingFace kernels Flash Attention       |
-| HF Kernels Flash Attention 3 | HuggingFace kernels Flash Attention 3     |
-| Memory Efficient Attention   | Memory efficient attention implementation |
-| Sage Attention               | Sage attention implementation             |
-| xFormers                     | xFormers attention implementation         |
+| Implementation               | Description                               | Source                                                 | HF                                   | Bench                                                  |
+| ---------------------------- | ----------------------------------------- | ------------------------------------------------------ | ------------------------------------ | ------------------------------------------------------ |
+| Flash Attention              | Flash Attention implementation            | [GitHub](https://github.com/Dao-AILab/flash-attention) | -                                    | [Bench](flash_attn/impls/flash_attention.html)         |
+| HF Kernels Flash Attention   | HuggingFace kernels Flash Attention       | [GitHub](https://github.com/huggingface/kernels)       | [HF](https://huggingface.co/kernels) | [Bench](flash_attn/impls/hf_kernels_flash_attn.html)   |
+| HF Kernels Flash Attention 3 | HuggingFace kernels Flash Attention 3     | [GitHub](https://github.com/huggingface/kernels)       | [HF](https://huggingface.co/kernels) | [Bench](flash_attn/impls/hf_kernels_flash_attn3.html)  |
+| Memory Efficient Attention   | Memory efficient attention implementation | [GitHub](https://github.com/facebookresearch/xformers) | -                                    | [Bench](flash_attn/impls/mem_efficient_attention.html) |
+| Sage Attention               | Sage attention implementation             | [GitHub](https://github.com/thu-ml/SageAttention)      | -                                    | [Bench](flash_attn/impls/sage_attention.html)          |
+| xFormers                     | xFormers attention implementation         | [GitHub](https://github.com/facebookresearch/xformers) | -                                    | [Bench](flash_attn/impls/xformers.html)                |
 
 <p align="center">
   <button
@@ -101,16 +93,63 @@ Each benchmark is run with the [Kernels Benchmarking Framework](https://github.c
 ---
 
 
+## DEFORMABLE DETR
+
+<div class="artifact-preview">
+  <img src="deformable_detr/results/artifacts/combine/latency.svg" alt="Deformable DETR Latency" width="800">
+</div>
+
+| Implementation             | Description                                        | Source                                           | HF                                   | Bench                                                          |
+| -------------------------- | -------------------------------------------------- | ------------------------------------------------ | ------------------------------------ | -------------------------------------------------------------- |
+| HF Kernels Deformable DETR | HuggingFace kernels Deformable DETR implementation | [GitHub](https://github.com/huggingface/kernels) | [HF](https://huggingface.co/kernels) | [Bench](deformable_detr/impls/hf_kernels_deformable_detr.html) |
+| PyTorch Deformable DETR    | PyTorch native Deformable DETR implementation      | -                                                | -                                    | [Bench](deformable_detr/impls/torch_deformable_detr.html)      |
+
+<p align="center">
+  <button
+    onclick="window.location.href='deformable_detr/'"
+    class="btn">
+    Explore Full Bench
+  </button>
+</p>
+
+
+---
+
+
+## OPENAI-STYLE MOE
+
+<div class="artifact-preview">
+  <img src="openai_moe/results/artifacts/combine/latency.svg" alt="OpenAI MoE Latency" width="800">
+</div>
+
+| Implementation        | Description                                    | Source                                           | HF                                   | Bench                                                |
+| --------------------- | ---------------------------------------------- | ------------------------------------------------ | ------------------------------------ | ---------------------------------------------------- |
+| GptOssExperts         | GPT OSS reference OpenAI-style MoE             | [GitHub](https://github.com/drbh/yamoe)          | [HF](https://huggingface.co/drbh)    | [Bench](openai_moe/impls/gpt_oss_moe.html)           |
+| Binned PyTorch        | Binned PyTorch OpenAI-style MoE implementation | -                                                | -                                    | [Bench](openai_moe/impls/binned_torch.html)          |
+<!-- | PyTorch OpenAI MoE    | PyTorch native OpenAI-style MoE implementation | -                                                | -                                    | [Bench](openai_moe/impls/torch_openai_moe.html)      | -->
+
+<p align="center">
+  <button
+    onclick="window.location.href='openai_moe/'"
+    class="btn">
+    Explore Full Bench
+  </button>
+</p>
+
+
+---
+
+
 ## CAUSAL CONV1D
 
 <div class="artifact-preview">
   <img src="causal_conv1d/results/artifacts/combine/latency.svg" alt="Causal Conv1D Latency" width="800">
 </div>
 
-| Implementation           | Description                        |
-| ------------------------ | ---------------------------------- |
-| HF Kernels Causal Conv1D | HuggingFace kernels implementation |
-| PyTorch Causal Conv1D    | PyTorch native implementation      |
+| Implementation           | Description                        | Source                                           | HF                                   | Bench                                                      |
+| ------------------------ | ---------------------------------- | ------------------------------------------------ | ------------------------------------ | ---------------------------------------------------------- |
+| HF Kernels Causal Conv1D | HuggingFace kernels implementation | [GitHub](https://github.com/huggingface/kernels) | [HF](https://huggingface.co/kernels) | [Bench](causal_conv1d/impls/hf_kernels_causal_conv1d.html) |
+| PyTorch Causal Conv1D    | PyTorch native implementation      | -                                                | -                                    | [Bench](causal_conv1d/impls/torch_causal_conv1d.html)      |
 
 <p align="center">
   <button
@@ -120,30 +159,51 @@ Each benchmark is run with the [Kernels Benchmarking Framework](https://github.c
   </button>
 </p>
 
+
 ---
 
 
-## ACTIVATION FUNCTIONS
+## ROTARY POSITION EMBEDDINGS
 
 <div class="artifact-preview">
-  <img src="activation/results/artifacts/combine/latency.svg" alt="Activation Latency" width="800">
+  <img src="rotary/results/artifacts/combine/latency.svg" alt="Rotary Position Embeddings Latency" width="800">
 </div>
 
-| Implementation    | Description                               |
-| ----------------- | ----------------------------------------- |
-| HF Kernels SwiGLU | HuggingFace kernels SwiGLU implementation |
-| PyTorch SwiGLU    | PyTorch native SwiGLU implementation      |
-
+| Implementation    | Description                        | Source                                           | HF                                   | Bench                                        |
+| ----------------- | ---------------------------------- | ------------------------------------------------ | ------------------------------------ | -------------------------------------------- |
+| HF Kernels Rotary | HuggingFace kernels implementation | [GitHub](https://github.com/huggingface/kernels) | [HF](https://huggingface.co/kernels) | [Bench](rotary/impls/hf_kernels_rotary.html) |
+| PyTorch Rotary    | PyTorch native implementation      | -                                                | -                                    | [Bench](rotary/impls/torch_rotary.html)      |
 
 <p align="center">
   <button
-    onclick="window.location.href='activation/'"
+    onclick="window.location.href='rotary/'"
     class="btn">
     Explore Full Bench
   </button>
 </p>
 
+
 ---
+
+
+## LAYER NORMALIZATION
+
+<div class="artifact-preview">
+  <img src="layer_norm/results/artifacts/combine/latency.svg" alt="Layer Norm Latency" width="800">
+</div>
+
+| Implementation        | Description                        | Source                                           | HF                                   | Bench                                                |
+| --------------------- | ---------------------------------- | ------------------------------------------------ | ------------------------------------ | ---------------------------------------------------- |
+| HF Kernels Layer Norm | HuggingFace kernels implementation | [GitHub](https://github.com/huggingface/kernels) | [HF](https://huggingface.co/kernels) | [Bench](layer_norm/impls/hf_kernels_layer_norm.html) |
+| PyTorch Layer Norm    | PyTorch native implementation      | -                                                | -                                    | [Bench](layer_norm/impls/torch_layer_norm.html)      |
+
+<p align="center">
+  <button 
+    onclick="window.location.href='layer_norm/'"
+    class="btn">
+    Explore Full Bench
+  </button>
+</p>
 
 <style>
     .controls {
@@ -188,12 +248,10 @@ Each benchmark is run with the [Kernels Benchmarking Framework](https://github.c
     }
     :root {
         --bg-alert: #0069cbff;
-        --border-alert: #001628ff;
     }
     .alert {
-        padding: 5px;
+        padding: 5px 10px;
         background-color: var(--bg-alert);
-        border-left: 6px solid var(--border-alert);
         margin-bottom: 10px;
         border-radius: 6px;
     }

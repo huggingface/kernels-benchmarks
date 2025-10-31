@@ -34,12 +34,12 @@ def gen_inputs(wl: dict) -> Sequence[torch.Tensor]:
     # Expert weights
     expert_dim = wl.get("expert_dim", H * 4)  # Typical MLP expansion
 
-    # Gate-up projection: [E, H, 2*expert_dim]
-    gate_up_proj = torch.randn(E, H, 2 * expert_dim, device=dev, dtype=dt) * 0.1
-    gate_up_proj_bias = torch.randn(E, 2 * expert_dim, device=dev, dtype=dt) * 0.01
+    # Gate-up projection: [E, H, expert_dim] (gate and up are interleaved in the expert_dim)
+    gate_up_proj = torch.randn(E, H, expert_dim, device=dev, dtype=dt) * 0.1
+    gate_up_proj_bias = torch.randn(E, expert_dim, device=dev, dtype=dt) * 0.01
 
-    # Down projection: [E, expert_dim, H]
-    down_proj = torch.randn(E, expert_dim, H, device=dev, dtype=dt) * 0.1
+    # Down projection: [E, expert_dim//2, H] (half because gate/up are interleaved)
+    down_proj = torch.randn(E, expert_dim // 2, H, device=dev, dtype=dt) * 0.1
     down_proj_bias = torch.randn(E, H, device=dev, dtype=dt) * 0.01
 
     return (
@@ -65,14 +65,6 @@ def naive_moe_ref(inputs: Sequence[torch.Tensor]) -> torch.Tensor:
         down_proj_bias,
     ) = inputs
 
-    # Convert to float32 for reference computation
-    hidden_states = hidden_states.to(torch.float32)
-    routing_weights = routing_weights.to(torch.float32)
-    gate_up_proj = gate_up_proj.to(torch.float32)
-    gate_up_proj_bias = gate_up_proj_bias.to(torch.float32)
-    down_proj = down_proj.to(torch.float32)
-    down_proj_bias = down_proj_bias.to(torch.float32)
-
     B, S, H = hidden_states.shape
     E, K = routing_weights.shape[2], router_indices.shape[1]
 
@@ -89,11 +81,12 @@ def naive_moe_ref(inputs: Sequence[torch.Tensor]) -> torch.Tensor:
             token_output = torch.zeros_like(token)
 
             for expert_idx in top_experts:
-                # Expert computation
+                # Expert computation - gate_up is interleaved [expert_dim]
                 gate_up = (
                     torch.matmul(token, gate_up_proj[expert_idx])
                     + gate_up_proj_bias[expert_idx]
                 )
+                # Split interleaved gate and up
                 gate, up = gate_up[::2], gate_up[1::2]
 
                 # Apply activation and clamping
@@ -102,7 +95,7 @@ def naive_moe_ref(inputs: Sequence[torch.Tensor]) -> torch.Tensor:
                 glu = gate * torch.sigmoid(gate * 1.702)
                 intermediate = (up + 1) * glu
 
-                # Down projection
+                # Down projection - intermediate is [expert_dim//2]
                 expert_output = (
                     torch.matmul(intermediate, down_proj[expert_idx])
                     + down_proj_bias[expert_idx]
@@ -129,57 +122,63 @@ def cmp_allclose(out: torch.Tensor, ref: torch.Tensor, rtol=1e-2, atol=1e-2) -> 
         "absmax": float(diff.max().item()),
         "mae": float(diff.mean().item()),
         "mse": float(((out - ref) ** 2).mean().item()),
-        "ref": "naive_moe_fp32",
+        "ref": "naive_moe",
     }
 
 
-def mixtral_workloads(dtype="bfloat16") -> Iterable[dict]:
-    """Generate Mixtral-style MoE workloads."""
-    for seq_len in [512, 1024, 2048]:
-        yield {
-            "name": f"mixtral_S{seq_len}",
-            "batch": 1,
-            "seq_len": seq_len,
-            "hidden_dim": 4096,
-            "expert_dim": 14336,  # Mixtral expert size
-            "num_experts": 8,
-            "top_k": 2,
-            "dtype": dtype,
-            "device": "cuda",
-            "seed": 42,
-        }
+def ref_impl(inputs: Sequence[torch.Tensor]) -> torch.Tensor:
+    """
+    Reference implementation for OpenAI/GPT-style MoE.
+    Matches the GptOssExperts forward pass behavior.
+    """
+    return naive_moe_ref(inputs)
 
 
-def small_moe_workloads(dtype="float32") -> Iterable[dict]:
-    """Generate smaller MoE workloads for testing/CPU."""
-    for seq_len in [64, 128, 256]:
-        for num_experts in [4, 8]:
-            yield {
-                "name": f"small_S{seq_len}_E{num_experts}",
-                "batch": 1,
-                "seq_len": seq_len,
-                "hidden_dim": 512,
-                "expert_dim": 1024,
-                "num_experts": num_experts,
-                "top_k": 2,
-                "dtype": dtype,
-                "device": "cpu",
-                "seed": 42,
-            }
+def workloads(dtype="float32", device="cuda") -> Iterable[dict]:
+    """Generate OpenAI/GPT-style MoE workloads for benchmarking."""
+    # # Based on typical GPT MoE configurations
+    # for seq_len in [128, 512]:
+    #     for num_experts in [2, 4]:
+    #         yield {
+    #             "name": f"{device}_B1_S{seq_len}_E{num_experts}",
+    #             "batch": 1,
+    #             "seq_len": seq_len,
+    #             "hidden_dim": 2880,
+    #             "expert_dim": 5760,
+    #             "num_experts": num_experts,
+    #             "top_k": 2,
+    #             "dtype": dtype,
+    #             "device": device,
+    #         }
+    # Based on typical GPT MoE configurations
+    for batch_size in [1, 4]:
+        for seq_len in [512, 1024]:
+            for num_experts in [2, 4]:
+                yield {
+                    "name": f"{device}_B{batch_size}_S{seq_len}_E{num_experts}",
+                    "batch": batch_size,
+                    "seq_len": seq_len,
+                    "hidden_dim": 2880,
+                    "expert_dim": 5760,
+                    "num_experts": num_experts,
+                    "top_k": 2,
+                    "dtype": dtype,
+                    "device": device,
+                }
 
 
-def switch_transformer_workloads(dtype="bfloat16") -> Iterable[dict]:
-    """Generate Switch Transformer style workloads (top-1)."""
-    for seq_len in [512, 1024]:
-        yield {
-            "name": f"switch_S{seq_len}",
-            "batch": 1,
-            "seq_len": seq_len,
-            "hidden_dim": 2048,
-            "expert_dim": 5120,
-            "num_experts": 16,
-            "top_k": 1,  # Switch uses top-1
-            "dtype": dtype,
-            "device": "cuda",
-            "seed": 42,
-        }
+# # single workload for quick testing
+# def workloads(dtype="float32", device="cuda") -> Iterable[dict]:
+#     print("✅ Using single workload for quick testing.")
+#     yield {
+#         "name": f"{device}_S128_E8",
+#         "batch": 1,
+#         "seq_len": 1024,
+#         "hidden_dim": 2880,
+#         "expert_dim": 5760,  # 2 * hidden_dim for yamoe compatibility
+#         "num_experts": 8,
+#         "top_k": 2,
+#         "dtype": dtype,
+#         "device": device,
+#         "seed": 42,
+#     }

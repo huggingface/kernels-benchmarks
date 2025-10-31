@@ -129,6 +129,38 @@ def run(
                 out = fn(*inputs)
                 corr = cmp(out, ref_out)
 
+                # TODO: improve the debugging info if correctness fails
+                if not corr.get("ok", False):
+                    print(f"\n{'=' * 70}")
+                    print(f"CORRECTNESS FAILURE: {name} | {wl.get('name', 'workload')}")
+                    print(f"{'=' * 70}")
+
+                    print(
+                        out.flatten()[0:5]
+                    )  # Print first 5 elements for quick sanity check
+                    print(ref_out.flatten()[0:5])
+
+                    print(out.shape)
+                    print(ref_out.shape)
+
+                    # print the diff
+                    diff = (out - ref_out).abs()
+                    print("Diff stats:")
+                    print(f"  max: {diff.max().item()}")
+                    print(f"  mean: {diff.mean().item()}")
+                    print(f"  mse: {((out - ref_out) ** 2).mean().item()}")
+
+                    # show the top 5 most different elements
+                    diff_flat = diff.flatten()
+                    top5_indices = torch.topk(diff_flat, 5).indices
+                    print("Top 5 most different elements (index: value):")
+                    for idx in top5_indices:
+                        # show the differ value and the corresponding values from out and ref_out
+                        print(
+                            f"  {idx.item()}: diff={diff_flat[idx].item()}, out={out.flatten()[idx].item()}, ref={ref_out.flatten()[idx].item()}"
+                        )
+                    print()
+
                 # Optional profiling trace (printed to stdout, no files saved)
                 if profile_trace:
                     activities = [ProfilerActivity.CPU]

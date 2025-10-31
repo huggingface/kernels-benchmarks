@@ -1,11 +1,12 @@
 from . import attn
 from . import rms_norm
 from . import layer_norm
-from . import moe
+from . import openai_moe
 from . import activation
 from . import causal_conv1d
 from . import relu
 from . import rotary
+from . import deformable_detr
 from . import core
 from .core.harness import add, run
 from .core.tools import summarize, viz
@@ -22,11 +23,12 @@ class KernelTypeEnum(str, Enum):
     ATTENTION = "attention"
     RMS_NORM = "rms_norm"
     LAYER_NORM = "layer_norm"
-    MOE = "moe"
+    OPENAI_MOE = "openai_moe"
     ACTIVATION = "activation"
     CAUSAL_CONV1D = "causal_conv1d"
     RELU = "relu"
     ROTARY = "rotary"
+    DEFORMABLE_DETR = "deformable_detr"
 
 
 # Map from type to module for implementation
@@ -34,11 +36,12 @@ KERNEL_MODULES = {
     KernelTypeEnum.ATTENTION: attn,
     KernelTypeEnum.RMS_NORM: rms_norm,
     KernelTypeEnum.LAYER_NORM: layer_norm,
-    KernelTypeEnum.MOE: moe,
+    KernelTypeEnum.OPENAI_MOE: openai_moe,
     KernelTypeEnum.ACTIVATION: activation,
     KernelTypeEnum.CAUSAL_CONV1D: causal_conv1d,
     KernelTypeEnum.RELU: relu,
     KernelTypeEnum.ROTARY: rotary,
+    KernelTypeEnum.DEFORMABLE_DETR: deformable_detr,
 }
 
 ## Benchmarking Functions
@@ -98,11 +101,12 @@ __all__ = [
     "attn",
     "rms_norm",
     "layer_norm",
-    "moe",
+    "openai_moe",
     "activation",
     "causal_conv1d",
     "relu",
     "rotary",
+    "deformable_detr",
     "core",
     "add",
     "run",
