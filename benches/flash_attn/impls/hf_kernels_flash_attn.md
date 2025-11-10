@@ -26,7 +26,7 @@ from kernels_benchmark_tools import KernelTypeEnum, run_benchmark
 from kernels import get_kernel
 
 # Load the flash attention kernel
-hf_kernels_flash_attn = get_kernel("kernels-community/flash-attn")
+hf_kernels_flash_attn = get_kernel("kernels-community/flash-attn2")
 
 
 def hf_flash_attention(query, key, value):
