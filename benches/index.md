@@ -31,12 +31,13 @@ To run the benchmarks locally, clone the repository and use `uvx` to build and r
 
 Note benches are made to run on a machine with a compatible NVIDIA GPU and CUDA installed, other hardware may not not work as expected.
 
-```bash
+<pre>
+<code>
 git clone https://github.com/huggingface/kernels-benchmarks.git
 cd kernels-benchmarks
 uvx https://github.com/drbh/uvnote.git build benches
-```
-
+</code>
+</pre>
 
 
 ## METHODOLOGY
@@ -73,7 +74,7 @@ Each benchmark is run with the
 
 <p align="center">
   <button
-    onclick="window.location.href='/#/activation/'"
+    onclick="window.location.href='activation/'"
     class="btn">
     Explore Full Bench
   </button>
