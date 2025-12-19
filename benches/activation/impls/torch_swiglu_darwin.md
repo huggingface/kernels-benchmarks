@@ -9,6 +9,12 @@ platforms:
 ## System Info
 
 ```python id=sysinfo
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "torch==2.8.0",
+# ]
+# ///
 import platform
 import subprocess
 print(f"Platform: {platform.system()} {platform.machine()}")
