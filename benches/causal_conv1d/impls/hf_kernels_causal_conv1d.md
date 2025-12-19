@@ -1,6 +1,8 @@
 ---
 on_github: huggingface/kernels-benchmarks
 on_huggingface: kernels-community/causal-conv1d
+platforms:
+  - linux
 ---
 
 # HF Kernels - Causal Conv1D

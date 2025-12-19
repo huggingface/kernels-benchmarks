@@ -1,6 +1,8 @@
 ---
 on_github: huggingface/kernels-benchmarks
 on_huggingface: kernels-community/deformable-detr
+platforms:
+  - linux
 ---
 
 # HF Kernels - Deformable DETR

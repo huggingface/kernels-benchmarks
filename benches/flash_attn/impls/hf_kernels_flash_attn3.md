@@ -1,6 +1,8 @@
 ---
 on_github: huggingface/kernels-benchmarks
 on_huggingface: kernels-community/flash-attn3
+platforms:
+  - linux
 ---
 
 # HF Kernels - Flash Attention 3

@@ -1,6 +1,8 @@
 ---
 on_github: huggingface/kernels-benchmarks
 on_huggingface: drbh/yamoe
+platforms:
+  - linux
 ---
 
 # GptOssExperts - OpenAI-style MoE

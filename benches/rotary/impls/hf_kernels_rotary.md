@@ -1,6 +1,8 @@
 ---
 on_github: huggingface/kernels-benchmarks
 on_huggingface: kernels-community/rotary
+platforms:
+  - linux
 ---
 
 # HF Kernels - Rotary Position Embeddings

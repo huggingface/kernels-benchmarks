@@ -1,5 +1,7 @@
 ---
 on_github: huggingface/kernels-benchmarks
+platforms:
+  - linux
 ---
 
 # Binned PyTorch - OpenAI-style MoE

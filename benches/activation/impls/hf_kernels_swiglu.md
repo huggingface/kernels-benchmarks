@@ -1,6 +1,8 @@
 ---
 on_github: huggingface/kernels-benchmarks
 on_huggingface: kernels-community/activation
+platforms:
+  - linux
 ---
 
 # HF Kernels - SwiGLU Activation

@@ -38,7 +38,7 @@ cache_env_map = {
     "HF Kernels Flash Attn": "UVNOTE_FILE_HF_KERNELS_FLASH_ATTN_BENCHMARK",
     "HF Kernels Flash Attn3": "UVNOTE_FILE_HF_KERNELS_FLASH_ATTN3_BENCHMARK",
     "SageAttention": "UVNOTE_FILE_SAGE_ATTENTION_BENCHMARK",
-    "Flash Attn CUTE": "UVNOTE_FILE_FLASH_ATTN_CUTE_BENCHMARK",
+    # "Flash Attn CUTE": "UVNOTE_FILE_FLASH_ATTN_CUTE_BENCHMARK",
 }
 
 # Generate combined results with visualization

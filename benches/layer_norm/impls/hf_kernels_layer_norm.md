@@ -1,6 +1,8 @@
 ---
 on_github: huggingface/kernels-benchmarks
 on_huggingface: kernels-community/layer-norm
+platforms:
+  - linux
 ---
 
 # HF Kernels LayerNorm Implementation
