@@ -10,8 +10,8 @@ env:
   MKL_NUM_THREADS: 8
 
 jobs:
-  build-and-deploy-gpu:
-    name: Build & Deploy (GPU)
+  build-linux:
+    name: Build (Linux/CUDA)
     runs-on:
       group: aws-g6e-4xlarge
 
@@ -59,19 +59,12 @@ jobs:
           # --strict will fail if any cells do not succeed.
           uvx --refresh https://github.com/drbh/uvnote.git build benches --strict
 
-      - name: Deploy to Hugging Face Space
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
-          # Upload the built site/ directory to the Space, cleaning removed files
-          echo "Deploying to Hugging Face Space kernels-community/kernels-benchmarks"
-          uvx --from huggingface-hub hf upload \
-            --token "$HF_TOKEN" \
-            --exclude "*.json" \
-            --exclude "*.pt" \
-            --repo-type space \
-            kernels-community/kernels-benchmarks \
-            site/ /
+      - name: Upload Linux site artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-linux
+          path: site/
+          retention-days: 1
 
   build-macos:
     name: Build (macOS)
@@ -103,3 +96,52 @@ jobs:
         run: |
           # Build darwin-specific benchmarks
           uvx --refresh https://github.com/drbh/uvnote.git build benches --strict
+
+      - name: Upload macOS site artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-darwin
+          path: site/
+          retention-days: 1
+
+  deploy:
+    name: Deploy to HF Spaces
+    needs: [build-linux, build-macos]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: site-linux
+          path: site/
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: site-darwin
+          path: site/
+
+      - name: List merged site contents
+        run: |
+          echo "Merged site contents:"
+          find site/ -type f | head -50
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: latest
+
+      - name: Deploy to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # Upload the merged site/ directory to the Space
+          echo "Deploying to Hugging Face Space kernels-community/kernels-benchmarks"
+          uvx --from huggingface-hub hf upload \
+            --token "$HF_TOKEN" \
+            --exclude "*.json" \
+            --exclude "*.pt" \
+            --repo-type space \
+            kernels-community/kernels-benchmarks \
+            site/ /
