@@ -15,7 +15,7 @@ This document combines benchmark results from multiple Flash Attention implement
 
 ![artifact:latency.svg]
 
-```python id=combine collapse-code=true needs=../impls/flash_attention.md:benchmark,../impls/mem_efficient_attention.md:benchmark,../impls/xformers.md:benchmark,../impls/hf_kernels_flash_attn.md:benchmark,../impls/hf_kernels_flash_attn3.md:benchmark,../impls/sage_attention.md:benchmark,../impls/flash_attn_cute.md:benchmark outputs=latency.svg
+```python id=combine collapse-code=true needs=../impls/flash_attention.md:benchmark,../impls/mem_efficient_attention.md:benchmark,../impls/xformers.md:benchmark,../impls/hf_kernels_flash_attn.md:benchmark,../impls/hf_kernels_flash_attn3.md:benchmark,../impls/sage_attention.md:benchmark outputs=latency.svg
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
