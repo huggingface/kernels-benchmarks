@@ -72,3 +72,34 @@ jobs:
             --repo-type space \
             kernels-community/kernels-benchmarks \
             site/ /
+
+  build-macos:
+    name: Build (macOS)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Show system info
+        run: |
+          uname -a
+          sysctl -n machdep.cpu.brand_string || true
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: latest
+
+      - name: Prepare Python 3.11
+        run: |
+          echo "Installing Python 3.11"
+          uv python install 3.11
+          echo "UV_PYTHON=3.11" >> "$GITHUB_ENV"
+
+      - name: Build site with uvnote (macOS)
+        run: |
+          # Build darwin-specific benchmarks
+          uvx --refresh https://github.com/drbh/uvnote.git build benches --strict
