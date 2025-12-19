@@ -5,6 +5,8 @@ theme: "dark"
 syntax_theme: "monokai"
 show_line_numbers: true
 collapse_code: false
+platforms:
+  - linux
 ---
 
 # Deformable DETR Multi-Scale Deformable Attention Benchmarks - Aggregated Results

@@ -5,6 +5,8 @@ theme: "dark"
 syntax_theme: "monokai"
 show_line_numbers: true
 collapse_code: false
+platforms:
+  - linux
 ---
 
 # Causal Conv1D Benchmarks - Aggregated Results
