@@ -23,7 +23,7 @@ This document combines benchmark results from SwiGLU activation implementations 
 # dependencies = [
 #     "numpy",
 #     "torch==2.8.0",
-#     "kernels-benchmark-tools",
+#     "kernels-benchmark-tools"     "torch",
 #     "matplotlib",
 # ]
 #
