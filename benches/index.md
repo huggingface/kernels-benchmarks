@@ -62,14 +62,26 @@ Each benchmark is run with the
 
 ## ACTIVATION FUNCTIONS
 
+### Linux (CUDA)
+
 <div class="artifact-preview">
-  <img src="activation/results/artifacts/combine/latency.svg" alt="Activation Latency" width="800">
+  <img src="activation/results_linux/artifacts/combine/latency.svg" alt="Activation Latency (Linux)" width="800">
 </div>
 
 | Implementation    | Description                               | Source                                                                          | HF                                                        | Bench                                            |
 | ----------------- | ----------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------ |
 | HF Kernels SwiGLU | HuggingFace kernels SwiGLU implementation | [GitHub](https://github.com/huggingface/kernels-community/tree/main/activation) | [HF](https://huggingface.co/kernels-community/activation) | [Bench](activation/impls/hf_kernels_swiglu.html) |
 | PyTorch SwiGLU    | PyTorch native SwiGLU implementation      | -                                                                               | -                                                         | [Bench](activation/impls/torch_swiglu.html)      |
+
+### macOS (MPS/CPU)
+
+<div class="artifact-preview">
+  <img src="activation/results_darwin/artifacts/combine/latency.svg" alt="Activation Latency (macOS)" width="800">
+</div>
+
+| Implementation         | Description                          | Source | HF  | Bench                                              |
+| ---------------------- | ------------------------------------ | ------ | --- | -------------------------------------------------- |
+| PyTorch SwiGLU (macOS) | PyTorch native SwiGLU on macOS       | -      | -   | [Bench](activation/impls/torch_swiglu_darwin.html) |
 
 
 <p align="center">
