@@ -20,20 +20,14 @@ def gen_inputs(wl: dict) -> Sequence[torch.Tensor]:
     return (input_tensor,)
 
 
-def ref_impl(inputs: Sequence[torch.Tensor]) -> torch.Tensor:
+def ref_impl(inputs):
     (input_tensor,) = inputs
-    x_f32 = input_tensor.to(torch.bfloat16)
 
-    # Split input into two halves
-    d = x_f32.shape[-1] // 2
-    x1 = x_f32[..., :d]  # First half
-    x2 = x_f32[..., d:]  # Second half
+    d = input_tensor.shape[-1] // 2
+    x1 = input_tensor[..., :d]
+    x2 = input_tensor[..., d:]
 
-    # SwiGLU: silu(x1) * x2
-    output = torch.nn.functional.silu(x1) * x2
-
-    # Convert back to original dtype
-    return output.to(input_tensor.dtype)
+    return torch.nn.functional.silu(x1) * x2
 
 
 def cmp_allclose(out: torch.Tensor, ref: torch.Tensor, rtol=None, atol=None) -> dict:
