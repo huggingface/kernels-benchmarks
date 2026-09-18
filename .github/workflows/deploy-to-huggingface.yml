@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 2
 
@@ -43,7 +43,7 @@ jobs:
           apt-get install -y nodejs
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
         with:
           version: latest
 
@@ -60,7 +60,7 @@ jobs:
           uvx --refresh https://github.com/drbh/uvnote.git build benches --strict
 
       - name: Upload Linux site artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: site-linux
           path: site/
@@ -72,7 +72,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 2
 
@@ -82,7 +82,7 @@ jobs:
           sysctl -n machdep.cpu.brand_string || true
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
         with:
           version: latest
 
@@ -98,7 +98,7 @@ jobs:
           uvx --refresh https://github.com/drbh/uvnote.git build benches --strict
 
       - name: Upload macOS site artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: site-darwin
           path: site/
@@ -111,13 +111,13 @@ jobs:
 
     steps:
       - name: Download Linux artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: site-linux
           path: site/
 
       - name: Download macOS artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: site-darwin
           path: site/
@@ -128,7 +128,7 @@ jobs:
           find site/ -type f | head -50
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
         with:
           version: latest
 
