@@ -9,8 +9,12 @@ env:
   OMP_NUM_THREADS: 8
   MKL_NUM_THREADS: 8
 
+permissions: {}
+
 jobs:
   build-linux:
+    permissions:
+      contents: read
     name: Build (Linux/CUDA)
     runs-on:
       group: aws-g6e-4xlarge
@@ -67,6 +71,8 @@ jobs:
           retention-days: 1
 
   build-macos:
+    permissions:
+      contents: read
     name: Build (macOS)
     runs-on: macos-latest
 
@@ -105,6 +111,7 @@ jobs:
           retention-days: 1
 
   deploy:
+    permissions: {}
     name: Deploy to HF Spaces
     needs: [build-linux, build-macos]
     runs-on: ubuntu-latest
